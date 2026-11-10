@@ -1,27 +1,62 @@
 package com.example.gapp
 
 class MainActivity {
+    data class Virement(
+        val montant : Int,
+        val auteur: String,
+        val libelle: String
+    )
 
-    data class Person(val name: String, val age: Int)
-    data class Enveloppe(val name: String, val montant: Long)
-    data class  Transaction(val montant: Long, val libelle: String, val date: String, val auteur: Person )
-
-    fun CalculByMonth(charges : Enveloppe, numberOfParticipant : Int, listCharge : MutableList<Enveloppe>): Long {
-        for toPaid in listCharge :
-        return charges.montant / numberOfParticipant
-
+    fun calculerPart(total: Int, nbPersonnes: Int): Int{
+        return total / nbPersonnes
     }
 
-     fun main() {
-        val thomas = Person("Thomas", 29)
-        val alice = Person("Alice", 29)
+    fun afficherPart(prenom: String, part: Int){
+        println("$prenom doit verser $part € pour le loyer")
+    }
 
-        val loyer = Enveloppe("budhet appart", 105000)
-        val nourriture = Enveloppe("budget course", 55000)
+    fun verifierVersement(prenom: String, verse: Int, attendu: Int){
+        if (verse == attendu){
+            println("$prenom a payé pile sa part")
+        }
+        else if (verse > attendu){
+            val trop = verse - attendu
+            println("$prenom a versé $trop € en trop")
+        }
+        else {
+            val pasAssez = attendu - verse
+            println("Il manque $pasAssez € à $prenom")
+        }
+    }
 
-        val virement1 = Transaction(30000, "food", "02/10/2026", "Alice")
-        val virement2 = Transaction(25000, "course du mois d'octobre", "02/10/2026", "Thomas")
-        val virement3 = Transaction(80000, "loyer", "01/10/2026", "Alice")
-        val virement4 = Transaction(25000, "loyer 10/2026", "05/10/2026", "Thomas")
+    fun totalPour(personne: String, virements: List<Virement>): Int{
+        var total : Int = 0
+        for (v in virements){
+            if (v.auteur == personne){
+                total += v.montant
+
+            }
+        }
+        return total
+    }
+
+    fun main() {
+
+        val prenom = "Thomas"
+        val montant = 1050
+
+        val v1 = Virement(200, prenom, "loyer")
+        val v2 = Virement(500, "Aliya", "loyer octobre")
+        val v3 = Virement(150, prenom, "loyer part 2")
+        val v4 = Virement(100, prenom, "loyer fin")
+
+        val partLoyer = calculerPart(montant, 2)
+        afficherPart(prenom, partLoyer)
+
+        val virements = listOf(v1, v2, v3, v4)
+        val totalThomas = totalPour(prenom, virements)
+        var totalAliya = totalPour("Aliya", virements)
+        verifierVersement(prenom, totalThomas, partLoyer)
+        verifierVersement("Aliya", totalAliya, partLoyer)
     }
 }
