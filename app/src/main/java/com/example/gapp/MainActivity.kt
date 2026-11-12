@@ -30,14 +30,7 @@ class MainActivity {
     }
 
     fun totalPour(personne: String, virements: List<Virement>): Int{
-        var total : Int = 0
-        for (v in virements){
-            if (v.auteur == personne){
-                total += v.montant
-
-            }
-        }
-        return total
+        return virements.filter { it.auteur == personne }.sumOf { it.montant }
     }
 
     fun main() {
@@ -54,8 +47,14 @@ class MainActivity {
         afficherPart(prenom, partLoyer)
 
         val virements = listOf(v1, v2, v3, v4)
+        val virementsAliya = virements.filter { it.auteur == "Aliya" }
+        println(virementsAliya.size)
+        val grosVirement = virements.filter { it.montant > 120 }
+        for (v in grosVirement){
+            println(v)
+        }
         val totalThomas = totalPour(prenom, virements)
-        var totalAliya = totalPour("Aliya", virements)
+        val totalAliya = totalPour("Aliya", virements)
         verifierVersement(prenom, totalThomas, partLoyer)
         verifierVersement("Aliya", totalAliya, partLoyer)
     }
