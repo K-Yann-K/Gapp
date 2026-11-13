@@ -32,12 +32,12 @@ fun EcranBudget(virements: List<Virement>, modifier: Modifier = Modifier) {
 @Composable
 fun LigneVirement(virement: Virement) {
     Row{
-        
+
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun EcranBudgetPreview() {
-    // TODO : appelle EcranBudget avec une petite liste de test
+
 }

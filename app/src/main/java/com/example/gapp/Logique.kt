@@ -23,7 +23,7 @@ fun messageVersement(prenom: String, somme: Int, attendu: Int): String{
         "$prenom a versé ${ somme - attendu } € en trop"
     }
     else {
-        "Il manque ${attendu - somme} € à $prenom"
+        "Il manque ${ attendu - somme } € à $prenom"
     }
 }
 
