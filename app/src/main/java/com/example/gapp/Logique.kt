@@ -31,6 +31,12 @@ fun totalPour(personne: String, virements: List<Virement>): Int{
     return virements.filter { it.auteur == personne }.sumOf { it.montant }
 }
 
+val virementsDeDepart = listOf(
+    Virement(200, "Thomas", "loyer"),
+    Virement(500, "Aliya", "loyer octobre"),
+    Virement(150, "Thomas", "loyer part 2"),
+    Virement(100, "Thomas", "loyer fin"),
+)
 fun main() {
 
     val prenom = "Thomas"

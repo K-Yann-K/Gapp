@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,47 +26,69 @@ import androidx.compose.ui.unit.sp
 
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val v1 = Virement(200, "Thomas", "loyer")
-        val v2 = Virement(500, "Aliya", "loyer octobre")
-        val v3 = Virement(150, "Thomas", "loyer part 2")
-        val v4 = Virement(100, "Thomas", "loyer fin")
-        val virements = listOf(v1, v2, v3, v4)
-
         setContent {
-            Scaffold(modifier = Modifier.fillMaxSize()) {
-                innerPadding -> EcranBudget(virements, Modifier.padding(innerPadding))
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                AppBudget(Modifier.padding(innerPadding))
             }
         }
     }
 }
 
 @Composable
-fun EcranBudget(virements: List<Virement>, modifier: Modifier = Modifier) {
+fun AppBudget(modifier: Modifier = Modifier) {
+    val virements = remember { virementsDeDepart.toMutableStateList() }
+
+    EcranBudget(
+        virements = virements,
+        onAjouter = { virements.add(Virement(50, "Aliya", "complément")) } ,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun EcranBudget(virements: List<Virement>, onAjouter: () -> Unit, modifier: Modifier = Modifier) {
+    val loyer = 1050
+    val part = calculerPart(loyer, 2)
+    val totalThomas = totalPour("Thomas", virements)
+    val totalAliya = totalPour("Aliya", virements)
+
+    LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
+        item { Text("Loyer - $loyer €", fontSize = 24.sp) }
+        item { Text(messageVersement("Thomas", totalThomas, part)) }
+        item { Text(messageVersement("Aliya", totalAliya, part)) }
+        item { HorizontalDivider(thickness = 1.dp) }
+        items(virements){
+            v -> LigneVirement(v)
+        }
+        item { Button(onClick = onAjouter) { Text("Aliya ajoute 50 €") } }
+    }
 
 }
 
 @Composable
 fun LigneVirement(virement: Virement) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-        ){
-            Column(modifier = Modifier.weight(1f)){
-                Text(virement.auteur, fontSize = 20.sp)
-                Text(virement.libelle, fontSize = 14.sp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(virement.auteur, fontSize = 20.sp)
+            Text(virement.libelle, fontSize = 14.sp)
 
-            }
-            Text("${virement.montant} €")
         }
-
+        Text("${virement.montant} €")
     }
+
+}
 
 
 @Preview(showBackground = true)
 @Composable
-fun LigneVirementPreview() {
-    LigneVirement(Virement(200, "Thomas", "loyer"))
+fun EcranBudgetPreview() {
+    EcranBudget(virements = virementsDeDepart, onAjouter = {})
 }
