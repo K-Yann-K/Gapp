@@ -21,13 +21,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.saveable.rememberSaveable
 
 
 class MainActivity : ComponentActivity() {
@@ -44,12 +44,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppBudget(modifier: Modifier = Modifier) {
-    val virements = remember { virementsDeDepart.toMutableStateList() }
+fun AppBudget(modifier: Modifier = Modifier, vm: BudgetViewModel = viewModel()) {
 
     EcranBudget(
-        virements = virements,
-        onAjouter = { v -> virements.add(v) } ,
+        virements = vm.virements,
+        onAjouter = vm::ajouter ,
         modifier = modifier,
     )
 }
@@ -93,13 +92,12 @@ fun LigneVirement(virement: Virement) {
 
 @Composable
 fun FormulaireVirement(onValider: (Virement) -> Unit, modifier: Modifier = Modifier) {
-    var auteur by remember { mutableStateOf("") }
-    var montantTexte by remember { mutableStateOf("") }
-    var libelle by remember { mutableStateOf("") }
+    var auteur by rememberSaveable { mutableStateOf("") }
+    var montantTexte by rememberSaveable { mutableStateOf("") }
+    var libelle by rememberSaveable { mutableStateOf("") }
 
     val montant = montantTexte.toIntOrNull()
-    val formulaireValide =
-        auteur.isNotBlank() && montant != null &&  ( montant > 0)
+    val formulaireValide = auteur.isNotBlank() && montant != null &&  ( montant > 0)
 
         Column(modifier = modifier) {
             OutlinedTextField(
