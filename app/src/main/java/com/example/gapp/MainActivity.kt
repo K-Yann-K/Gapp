@@ -11,18 +11,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
-
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.input.KeyboardType
 
 
 class MainActivity : ComponentActivity() {
@@ -44,13 +49,13 @@ fun AppBudget(modifier: Modifier = Modifier) {
 
     EcranBudget(
         virements = virements,
-        onAjouter = { virements.add(Virement(50, "Aliya", "complément")) } ,
+        onAjouter = { v -> virements.add(v) } ,
         modifier = modifier,
     )
 }
 
 @Composable
-fun EcranBudget(virements: List<Virement>, onAjouter: () -> Unit, modifier: Modifier = Modifier) {
+fun EcranBudget(virements: List<Virement>, onAjouter: (Virement) -> Unit, modifier: Modifier = Modifier) {
     val loyer = 1050
     val part = calculerPart(loyer, 2)
     val totalThomas = totalPour("Thomas", virements)
@@ -64,7 +69,7 @@ fun EcranBudget(virements: List<Virement>, onAjouter: () -> Unit, modifier: Modi
         items(virements){
             v -> LigneVirement(v)
         }
-        item { Button(onClick = onAjouter) { Text("Aliya ajoute 50 €") } }
+        item { FormulaireVirement(onValider = onAjouter) }
     }
 
 }
@@ -84,6 +89,49 @@ fun LigneVirement(virement: Virement) {
         Text("${virement.montant} €")
     }
 
+}
+
+@Composable
+fun FormulaireVirement(onValider: (Virement) -> Unit, modifier: Modifier = Modifier) {
+    var auteur by remember { mutableStateOf("") }
+    var montantTexte by remember { mutableStateOf("") }
+    var libelle by remember { mutableStateOf("") }
+
+    val montant = montantTexte.toIntOrNull()
+    val formulaireValide =
+        auteur.isNotBlank() && montant != null &&  ( montant > 0)
+
+        Column(modifier = modifier) {
+            OutlinedTextField(
+                value = auteur,
+                onValueChange = { auteur = it },
+                label = { Text("Auteur") },
+            )
+
+            OutlinedTextField(
+                value = montantTexte,
+                onValueChange = { montantTexte = it },
+                label = { Text("Montant") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            )
+
+            OutlinedTextField(
+                value = libelle,
+                onValueChange = { libelle= it },
+                label = { Text("Libellé") },
+            )
+
+            Button(
+                onClick = { onValider(Virement(montant ?: 0, auteur, libelle))
+                    auteur = ""
+                    montantTexte = ""
+                    libelle = ""
+                },
+                enabled = formulaireValide,
+            ) {
+                Text("Ajouter")
+            }
+        }
 }
 
 
