@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.saveable.rememberSaveable
-
+import androidx.compose.material3.TextButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,11 +51,12 @@ fun AppBudget(modifier: Modifier = Modifier, vm: BudgetViewModel = viewModel()) 
         virements = vm.virements,
         onAjouter = vm::ajouter ,
         modifier = modifier,
+        onDelete = vm::supprimer
     )
 }
 
 @Composable
-fun EcranBudget(virements: List<Virement>, onAjouter: (Virement) -> Unit, modifier: Modifier = Modifier) {
+fun EcranBudget(virements: List<Virement>, onAjouter: (Virement) -> Unit, onDelete: (String) -> Unit, modifier: Modifier = Modifier) {
     val loyer = 1050
     val part = calculerPart(loyer, 2)
     val totalThomas = totalPour("Thomas", virements)
@@ -65,8 +67,8 @@ fun EcranBudget(virements: List<Virement>, onAjouter: (Virement) -> Unit, modifi
         item { Text(messageVersement("Thomas", totalThomas, part)) }
         item { Text(messageVersement("Aliya", totalAliya, part)) }
         item { HorizontalDivider(thickness = 1.dp) }
-        items(virements){
-            v -> LigneVirement(v)
+        items(virements, key = { it.id }){
+            v -> LigneVirement(v, onSupprimer = { onDelete(v.id) } )
         }
         item { FormulaireVirement(onValider = onAjouter) }
     }
@@ -74,7 +76,7 @@ fun EcranBudget(virements: List<Virement>, onAjouter: (Virement) -> Unit, modifi
 }
 
 @Composable
-fun LigneVirement(virement: Virement) {
+fun LigneVirement(virement: Virement, onSupprimer: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -86,9 +88,14 @@ fun LigneVirement(virement: Virement) {
 
         }
         Text("${virement.montant} €")
+        TextButton(onClick = onSupprimer) {
+            Text("✕")
+        }
     }
 
 }
+
+
 
 @Composable
 fun FormulaireVirement(onValider: (Virement) -> Unit, modifier: Modifier = Modifier) {
@@ -136,5 +143,5 @@ fun FormulaireVirement(onValider: (Virement) -> Unit, modifier: Modifier = Modif
 @Preview(showBackground = true)
 @Composable
 fun EcranBudgetPreview() {
-    EcranBudget(virements = virementsDeDepart, onAjouter = {})
+    EcranBudget(virements = virementsDeDepart, onAjouter = {}, onDelete = {})
 }

@@ -11,4 +11,8 @@ class BudgetViewModel : ViewModel() {
     fun ajouter(virement: Virement) {
         _virements.add(virement)
     }
+
+    fun supprimer(id: String) {
+        _virements.removeAll { it.id == id }
+    }
 }

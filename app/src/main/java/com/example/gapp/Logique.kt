@@ -1,9 +1,12 @@
 package com.example.gapp
 
+import java.util.UUID
+
 data class Virement(
     val montant : Int,
     val auteur: String,
-    val libelle: String
+    val libelle: String,
+    val id: String = UUID.randomUUID().toString(),
 )
 
 fun calculerPart(total: Int, nbPersonnes: Int): Int{
