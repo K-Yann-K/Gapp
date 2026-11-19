@@ -48,31 +48,36 @@ class MainActivity : ComponentActivity() {
 fun AppBudget(modifier: Modifier = Modifier, vm: BudgetViewModel = viewModel()) {
 
     EcranBudget(
+        loyer = vm.loyer,
+        messages = vm.messages,
         virements = vm.virements,
-        onAjouter = vm::ajouter ,
+        onAjouter = vm::ajouter,
+        onSupprimer = vm::supprimer,
         modifier = modifier,
-        onDelete = vm::supprimer
     )
 }
 
 @Composable
-fun EcranBudget(virements: List<Virement>, onAjouter: (Virement) -> Unit, onDelete: (String) -> Unit, modifier: Modifier = Modifier) {
-    val loyer = 1050
-    val part = calculerPart(loyer, 2)
-    val totalThomas = totalPour("Thomas", virements)
-    val totalAliya = totalPour("Aliya", virements)
-
+fun EcranBudget(
+    loyer: Int,
+    messages: List<String>,
+    virements: List<Virement>,
+    onAjouter: (Virement) -> Unit,
+    onSupprimer: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LazyColumn(modifier = modifier.padding(horizontal = 16.dp)) {
         item { Text("Loyer - $loyer €", fontSize = 24.sp) }
-        item { Text(messageVersement("Thomas", totalThomas, part)) }
-        item { Text(messageVersement("Aliya", totalAliya, part)) }
+        items(messages) {
+            mes -> Text(mes)
+        }
+
         item { HorizontalDivider(thickness = 1.dp) }
-        items(virements, key = { it.id }){
-            v -> LigneVirement(v, onSupprimer = { onDelete(v.id) } )
+        items(virements, key = { it.id }) { v ->
+            LigneVirement(v, onSupprimer = { onSupprimer(v.id) })
         }
         item { FormulaireVirement(onValider = onAjouter) }
     }
-
 }
 
 @Composable
@@ -143,5 +148,11 @@ fun FormulaireVirement(onValider: (Virement) -> Unit, modifier: Modifier = Modif
 @Preview(showBackground = true)
 @Composable
 fun EcranBudgetPreview() {
-    EcranBudget(virements = virementsDeDepart, onAjouter = {}, onDelete = {})
+    EcranBudget(
+        loyer = 1050,
+        messages = listOf("Il manque 75 € à Thomas", "Il manque 25 € à Aliya"),
+        virements = virementsDeDepart,
+        onAjouter = {},
+        onSupprimer = {},
+    )
 }
