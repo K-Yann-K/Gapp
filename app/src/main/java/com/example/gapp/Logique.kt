@@ -44,8 +44,11 @@ val virementsDeDepart = listOf(
     Virement(100, "Thomas", "loyer fin"),
 )
 fun main() {
-    val vJSON = Json.encodeToString(virementsDeDepart)
-    val vListe : List<Virement> = Json.decodeFromString(vJSON)
-    println(vListe)
+    fun main() {
+        val vJSON = Json.encodeToString(virementsDeDepart)
+        println(vJSON)                             
+        val vListe: List<Virement> = Json.decodeFromString(vJSON)
+        println(vListe == virementsDeDepart)
+    }
 
 }
